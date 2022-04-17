@@ -5,7 +5,7 @@
 using namespace std;
 
 
-const int arr_size = 80;
+const int arr_size = 100;
 
 struct Cargos{
 	int number;
@@ -103,7 +103,6 @@ void onAddCargo(){
 	}
 }
 
-
 void canToPushIn(int current_cell_number , int needed_size_to_put , int cargos_number){
 	Cells* recells = head;
 	bool isFound = false;
@@ -171,35 +170,44 @@ void retake_cargos(Cargos *cargo_to_change_and_put){ // вставить cargo_t
 }
 
 
-void cargos_sort(Cargos *cargo_to_sort){
+void cargos_sort(Cargos *cargo_to_sort , int start_point){
 	current = head; // контейнер
-
-	Cargos *head_for_retake = cargo_to_sort;
 
 	int free_space;
 	int counter = 0;
 
+	while(cargo_to_sort -> number <= start_point){
+		cargo_to_sort = cargo_to_sort -> next;
+	}
+
 	while(current != tail -> next){
+
 		free_space = current -> size - current -> content_size;
 		
-		if(free_space >= cargo_to_sort -> size){
-			current -> content_size += cargo_to_sort -> size;
-			current -> cargos_data[counter][0] = cargo_to_sort -> number;
-			current -> cargos_data[counter][1] = cargo_to_sort -> size;
-			current -> size_of_cargos_data += 1;
-			printf("В конт #%d добавлен груз размером %d и теперь заполненость %d \n" , current->number, current-> cargos_data[counter][1] , current->content_size);
-			cargo_to_sort = cargo_to_sort -> next;
-			counter++;
+		if(cargo_to_sort != cargo_tail -> next){
+
+			if(free_space >= cargo_to_sort -> size){
+				current -> content_size += cargo_to_sort -> size;
+				current -> cargos_data[counter][0] = cargo_to_sort -> number;
+				current -> cargos_data[counter][1] = cargo_to_sort -> size;
+				current -> size_of_cargos_data += 1;
+				printf("В конт #%d добавлен груз размером %d и теперь заполненость %d \n" , current->number, current-> cargos_data[counter][1] , current->content_size);
+				cargo_to_sort = cargo_to_sort -> next;
+				counter++;
+			}else{
+				counter = 0;
+				current = current -> next;
+			}
+
 		}else{
-			counter = 0;
-			current = current -> next;
+			current = tail -> next;
 		}
 	}
 
-	while(cargo_to_sort != cargo_tail -> next){
-		retake_cargos(cargo_to_sort);
-		cargo_to_sort = cargo_to_sort -> next;
-	}
+	// while(cargo_to_sort != cargo_tail -> next){
+	// 	retake_cargos(cargo_to_sort);
+	// 	cargo_to_sort = cargo_to_sort -> next;
+	// }
 }
 
 
@@ -208,29 +216,12 @@ int main(){
 	
 	cells_list();
 
-	// for(int i = 0 ; i < started_count_of_cargos; i++){
-	// 	onAddCargo();
-	// }
-	// cargos_sort(cargo_head);
+	int count_of_cargos = 0;
 
-
-	// Cells* head = NULL; // Переменная для 1 элемента списка 
-	// Cells* current; // Переменная структуры
-	// Cells* tail = NULL; // Переменная для крайнего элемента списка
-
-	// Cargos* cargo_head = NULL; // Переменная для 1 элемента списка
-	// Cargos* cargo_current; // Переменная структуры
-	// Cargos* cargo_tail = NULL; // Переменная для крайнего элемента списка	
-
-	// cargos_sort();
-
-
-
-	while(working_time <= 500){
+	while(working_time <= 200){
 		start_time = clock(); // в миллисекундах
 
 		srand(time(0)); // для абсолютно случайного значения числа
-
 		int random_number = rand() % hundred + 1; // диапазон от 1 до 100
 
 		while(random_number <= p * hundred){
@@ -240,6 +231,14 @@ int main(){
 		}
 
 		cout << endl;
+		
+		if(cargo_tail != NULL){
+			cargos_sort(cargo_head , count_of_cargos);
+
+			count_of_cargos += cargo_tail -> number - count_of_cargos;
+		}
+		
+
 
 		end_time = clock();
 
@@ -250,23 +249,23 @@ int main(){
 		Cargos *prev = cargo_head;
 
 	
-		while(head_for_deleting != cargo_tail -> next){
-			if((head_for_deleting -> time) <= working_time){
-				printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
+		// while(head_for_deleting != cargo_tail -> next){
+		// 	if((head_for_deleting -> time) <= working_time){
+		// 		printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
 
-				if(head_for_deleting == cargo_head){
-					delete_cargo = head_for_deleting;
-					head_for_deleting = head_for_deleting -> next; 
-					prev = head_for_deleting;
-					cargo_head = cargo_head -> next;
-					delete delete_cargo;
-				}
+		// 		if(head_for_deleting == cargo_head){
+		// 			delete_cargo = head_for_deleting;
+		// 			head_for_deleting = head_for_deleting -> next; 
+		// 			prev = head_for_deleting;
+		// 			cargo_head = cargo_head -> next;
+		// 			delete delete_cargo;
+		// 		}
 				
-			} else{
-				prev = head_for_deleting;
-				head_for_deleting = head_for_deleting -> next;
-			}
-		}
+		// 	} else{
+		// 		prev = head_for_deleting;
+		// 		head_for_deleting = head_for_deleting -> next;
+		// 	}
+		// }
 		
 		cout << endl;
 
