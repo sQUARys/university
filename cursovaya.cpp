@@ -191,7 +191,7 @@ void cargos_sort(Cargos *cargo_to_sort , int start_point){
 				current -> cargos_data[counter][0] = cargo_to_sort -> number;
 				current -> cargos_data[counter][1] = cargo_to_sort -> size;
 				current -> size_of_cargos_data += 1;
-				printf("В конт #%d добавлен груз размером %d и теперь заполненость %d \n" , current->number, current-> cargos_data[counter][1] , current->content_size);
+				printf("В конт #%d добавлен груз размером %d и номером %d в массив под индексом %d \n" , current->number, current-> cargos_data[counter][1] , current-> cargos_data[counter][0] , counter);
 				cargo_to_sort = cargo_to_sort -> next;
 				counter++;
 			}else{
@@ -208,6 +208,33 @@ void cargos_sort(Cargos *cargo_to_sort , int start_point){
 	// 	retake_cargos(cargo_to_sort);
 	// 	cargo_to_sort = cargo_to_sort -> next;
 	// }
+}
+
+void checker(Cargos *cargo_to_delete){
+	current = head;
+	bool isFind = false;
+
+	while(current != tail -> next && !isFind){
+
+		for(int i = 0 ; i < current -> size_of_cargos_data ; i++){
+			if(current -> cargos_data[i][0] == cargo_to_delete -> number){ //нашли наш груз в отсеке
+				isFind = true;
+				
+				for(int j = i ; j <  current -> size_of_cargos_data ; ++j){ //удаление из массива структуры данного груза
+					current -> cargos_data[i][0] = current -> cargos_data[i + 1][0];
+					current -> cargos_data[i][1] = current -> cargos_data[i + 1][1];
+				}
+				current -> size_of_cargos_data--; //уменьшаем длинну массива потому что удалили один элемент
+				
+				printf("Массив из отсека №%d " , current -> number);
+				for(int f = 0 ; f < current -> size_of_cargos_data ; f++){
+					cout << "("<< current->cargos_data[f][0] << " " << current->cargos_data[f][1] << ")";
+				}
+				cout << endl;
+			}
+		}
+		current = current -> next;
+	}
 }
 
 
@@ -249,24 +276,28 @@ int main(){
 		Cargos *prev = cargo_head;
 
 	
-		// while(head_for_deleting != cargo_tail -> next){
-		// 	if((head_for_deleting -> time) <= working_time){
-		// 		printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
+		while(head_for_deleting != cargo_tail -> next){
+			if((head_for_deleting -> time) <= working_time){
+				printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
 
-		// 		if(head_for_deleting == cargo_head){
-		// 			delete_cargo = head_for_deleting;
-		// 			head_for_deleting = head_for_deleting -> next; 
-		// 			prev = head_for_deleting;
-		// 			cargo_head = cargo_head -> next;
-		// 			delete delete_cargo;
-		// 		}
+				if(head_for_deleting == cargo_head){
+
+					checker(head_for_deleting); // проверим и удалим из отсека
+					delete_cargo = head_for_deleting;
+					head_for_deleting = head_for_deleting -> next; 
+					prev = head_for_deleting;
+					cargo_head = cargo_head -> next;
+					delete delete_cargo;
+				}
 				
-		// 	} else{
-		// 		prev = head_for_deleting;
-		// 		head_for_deleting = head_for_deleting -> next;
-		// 	}
-		// }
-		
+			} else{
+				prev = head_for_deleting;
+				head_for_deleting = head_for_deleting -> next;
+			}
+		}
+	
+		break;
+
 		cout << endl;
 
 	}
