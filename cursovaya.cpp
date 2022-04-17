@@ -53,6 +53,7 @@ int start_time , end_time;
 
 bool isAdded = false;
 
+
 void cells_list(){
 	cout << "Введите количество отсеков: ";
 
@@ -103,20 +104,29 @@ void onAddCargo(){
 }
 
 
-Cells* canToPushIn(int current_cell_number , int needed_size_to_put){
-	to_put_cell = head;
+void canToPushIn(int current_cell_number , int needed_size_to_put , int cargos_number){
+	Cells* recells = head;
 	bool isFound = false;
-	Cells *needed_cells;
+	int number_for_recells = 0;
 
-	while(!isFound){
-		if((current_cell_number != to_put_cell -> number) && (to_put_cell -> size - to_put_cell -> content_size >= needed_size_to_put)){
+	while(!isFound && recells != tail -> next){	
+		cout << recells -> size - recells -> content_size << "NEED " << needed_size_to_put << endl;
+		if((current_cell_number != recells -> number) && (recells -> size - recells -> content_size >= needed_size_to_put)){
 			isFound = true;
-			needed_cells = to_put_cell;
-		}
-		to_put_cell = to_put_cell -> next;
-	}
+			number_for_recells = recells -> number;
 
-	return needed_cells;
+				// ??????????
+
+			//сделать добавление в cargos_data
+			recells -> size_of_cargos_data++; 
+			recells -> cargos_data[recells -> size_of_cargos_data][0] = cargos_number;
+			recells -> cargos_data[recells -> size_of_cargos_data][1] = needed_size_to_put;
+			recells -> content_size += needed_size_to_put;
+				// ??????????
+
+		}
+		recells = recells -> next;
+	}
 
 }
 
@@ -127,30 +137,35 @@ Cells* canToPushIn(int current_cell_number , int needed_size_to_put){
 
 // разобраться что вернуть в canToPushIn и обработать это
 
-void retake_cargos(Cargos *cargo_to_change_and_put){
+void retake_cargos(Cargos *cargo_to_change_and_put){ // вставить cargo_to_change_and_put
 	current = head;
-
 	int memory_number = 0;
-
 	int min_free_place = 100000000;
 	int free_place = 0;
 
-	while(current != tail -> next){
-		for(int i = 0 ; i < current -> size_of_cargos_data ; i++){
+	while(current != tail -> next){ //пока не все отсеки попробованы
+
+		for(int i = 0 ; i < current -> size_of_cargos_data ; i++){ // ищем с каким грузом заменить данный
+		
 			free_place = current -> size - current -> content_size + current -> cargos_data[i][1];
-			cout << "FREE " << free_place << " CARGO " << cargo_to_change_and_put -> size  << endl;
+			cout << "FREE " << free_place << " CARGO " << cargo_to_change_and_put -> size  << " DATA " <<  current -> cargos_data[i][1] << endl;
 
 
 			if(free_place >= (cargo_to_change_and_put -> size) && free_place < min_free_place){
-				// to_put_cell = canToPushIn(current -> number , cargo_to_change_and_put -> size);
-				min_free_place = free_place;
-				memory_number = current -> cargos_data[i][0];
-				printf("Заменим груз нынешний на груз из массива №%d \n" , memory_number);
+				
+				// ??????????
+				canToPushIn(current -> number , cargo_to_change_and_put -> size , cargo_to_change_and_put -> number);
+				// ??????????
 
-				//сделать добавление в cargos_data
+				// printf("В отсек №%d  можно вставить данный груз \n" , memory_number);
+
+				min_free_place = free_place;
+
+
 			}
 		}
 		cout << "\n";
+		
 		current = current -> next;
 	}	
 }
@@ -181,10 +196,10 @@ void cargos_sort(Cargos *cargo_to_sort){
 		}
 	}
 
-	// while(cargo_to_sort != cargo_tail -> next){
-	// 	retake_cargos(cargo_to_sort);
-	// 	cargo_to_sort = cargo_to_sort -> next;
-	// }
+	while(cargo_to_sort != cargo_tail -> next){
+		retake_cargos(cargo_to_sort);
+		cargo_to_sort = cargo_to_sort -> next;
+	}
 }
 
 
