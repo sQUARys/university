@@ -91,13 +91,13 @@ void onAddCargo(){
 		cargo_head -> time = ratio_for_cargo_time;
 		cargo_head -> number = 1;
 		cargo_tail = cargo_head;
-		cout<< "CARGO SIZE " << cargo_head -> size << endl;
+		// cout<< "CARGO SIZE " << cargo_head -> size << endl;
 	}else { 
 		cargo_current = new Cargos;
 		cargo_current -> number = cargo_tail -> number + 1;
 		cargo_current -> size = (cargo_current -> number) * ratio_for_cargo_size;
 		cargo_current -> time = (cargo_current -> number) * ratio_for_cargo_time;
-		cout<< "CARGO SIZE " << cargo_current -> size << endl;
+		// cout<< "CARGO SIZE " << cargo_current -> size << endl;
 		cargo_tail -> next = cargo_current;
 		cargo_tail = cargo_current;
 	}
@@ -208,10 +208,10 @@ int main(){
 	
 	cells_list();
 
-	for(int i = 0 ; i < started_count_of_cargos; i++){
-		onAddCargo();
-	}
-	cargos_sort(cargo_head);
+	// for(int i = 0 ; i < started_count_of_cargos; i++){
+	// 	onAddCargo();
+	// }
+	// cargos_sort(cargo_head);
 
 
 	// Cells* head = NULL; // Переменная для 1 элемента списка 
@@ -226,62 +226,51 @@ int main(){
 
 
 
-	// while(working_time <= 500){
-	// 	start_time = clock(); // в миллисекундах
-	// 	srand(time(0)); // для абсолютно случайного значения числа
-	// 	int random_number = rand() % hundred + 1; // диапазон от 1 до 100
-	// 	while(random_number <= p * hundred){
-	// 		onAddCargo();
-	// 		printf("Добавлен новый груз №%d с размером %d и временем работы %d.\n", cargo_tail -> number , cargo_tail -> size , cargo_tail -> time);
-	// 		random_number = rand() % hundred + 1;
-	// 	}
-	// 	cout << endl;
+	while(working_time <= 500){
+		start_time = clock(); // в миллисекундах
 
-	// 	end_time = clock();
+		srand(time(0)); // для абсолютно случайного значения числа
 
-	// 	working_time += (end_time - start_time);
+		int random_number = rand() % hundred + 1; // диапазон от 1 до 100
 
-	// 	Cargos *head_for_deleting = cargo_head;
-	// 	Cargos *delete_cargo = cargo_head;
-	// 	Cargos *prev = cargo_head;
+		while(random_number <= p * hundred){
+			onAddCargo();
+			printf("Добавлен новый груз №%d с размером %d и временем работы %d.\n", cargo_tail -> number , cargo_tail -> size , cargo_tail -> time);
+			random_number = rand() % hundred + 1;
+		}
+
+		cout << endl;
+
+		end_time = clock();
+
+		working_time += (end_time - start_time);
+
+		Cargos *head_for_deleting = cargo_head;
+		Cargos *delete_cargo = cargo_head;
+		Cargos *prev = cargo_head;
 
 	
-	// 	while(head_for_deleting != cargo_tail -> next){
-	// 		if((head_for_deleting -> time) <= working_time){
-	// 			printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
+		while(head_for_deleting != cargo_tail -> next){
+			if((head_for_deleting -> time) <= working_time){
+				printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
 
-	// 			if(head_for_deleting == cargo_head){
-	// 				delete_cargo = head_for_deleting;
-	// 				head_for_deleting = head_for_deleting -> next; 
-	// 				prev = head_for_deleting;
-	// 				cargo_head = cargo_head -> next;
-	// 				delete delete_cargo;
-
-	// 			}
+				if(head_for_deleting == cargo_head){
+					delete_cargo = head_for_deleting;
+					head_for_deleting = head_for_deleting -> next; 
+					prev = head_for_deleting;
+					cargo_head = cargo_head -> next;
+					delete delete_cargo;
+				}
 				
-	// 			// else if(head_for_deleting == cargo_tail){
-	// 			// 	delete_cargo = head_for_deleting;
-	// 			// 	prev -> next = head_for_deleting -> next;  // то есть NULL
-	// 			// 	delete delete_cargo;
-	// 			// 	head_for_deleting = prev -> next;
-	// 			// 	cargo_tail = prev;
-	// 			// }else {
-	// 			// 	delete_cargo = head_for_deleting;
-	// 			// 	prev -> next = delete_cargo -> next;
-	// 			// 	delete delete_cargo;
-	// 			// 	head_for_deleting = prev -> next;	
-	// 			// }
-
-	// 		} else{
-
-	// 			prev = head_for_deleting;
-	// 			head_for_deleting = head_for_deleting -> next;
-	// 		}
-	// 	}
+			} else{
+				prev = head_for_deleting;
+				head_for_deleting = head_for_deleting -> next;
+			}
+		}
 		
-	// 	cout << endl;
+		cout << endl;
 
-	// }
+	}
 	
 	return 0;
 }
