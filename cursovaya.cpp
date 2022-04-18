@@ -75,7 +75,7 @@ void cells_list(){
 		head -> size = ratio_for_cell_size;
 		head -> number = 1;
 		head -> content_size = 0;
-		cout << "CELL SIZE " << head -> size << endl;
+		cout << "Размер вашего отсека: " << head -> size << endl;
 		tail = head;
 	}
 
@@ -83,7 +83,7 @@ void cells_list(){
 		current = new Cells;
 		current -> number = i;
 		current -> size = i * ratio_for_cell_size;
-		cout << "CELL SIZE " << current -> size << endl;
+		cout << "Размер вашего отсека: " << current -> size << endl;
 		current -> content_size = 0;
 		tail -> next = current;
 		tail = current;
@@ -110,11 +110,10 @@ void onAddCargo(){
 }
 
 bool canToPushIn(int current_cell_number , int needed_size_to_put , int cargos_number , int position_of_retaked_cargo , Cells *current){ // перенос из старого отсека в новый
-	Cells* recells = head;
+	Cells* recells = head; // новый отсек
 	bool isFound = false;
 
 	while(!isFound && recells != tail -> next){	 // пока мы не нашли для груза с которым хотим поменяться свободное место в других отсеках, ищем
-		// cout << recells -> size - recells -> content_size << " NEED " << needed_size_to_put << endl;
 		if((current_cell_number != recells -> number) && (recells -> size - recells -> content_size >= needed_size_to_put)){ // нашли куда перенести груз
 			isFound = true;	
 
@@ -126,6 +125,8 @@ bool canToPushIn(int current_cell_number , int needed_size_to_put , int cargos_n
 			//запись нового груза на место старого груза
 			current -> cargos_data[position_of_retaked_cargo][0] = cargos_number;
 			current -> cargos_data[position_of_retaked_cargo][1] = needed_size_to_put;
+			current -> content_size -=  current -> cargos_data[position_of_retaked_cargo][1]; // убираем размеры старого груза
+			current -> content_size += needed_size_to_put;// добавляем размеры нового груза
 		}	
 		recells = recells -> next;
 	}
@@ -212,8 +213,7 @@ void retake_cargos(Cargos *cargo_to_change_and_put){ // вставить cargo_t
 
 }
 
-
-void cargos_sort(Cargos *cargo_to_sort , int start_point , Cargos *current_tail){
+void cargos_sort(Cargos *cargo_to_sort , int start_point , Cargos *current_cargo_tail){
 	current = head; // контейнер
 
 	int free_space;
@@ -227,7 +227,7 @@ void cargos_sort(Cargos *cargo_to_sort , int start_point , Cargos *current_tail)
 
 		free_space = current -> size - current -> content_size;
 		
-		if(cargo_to_sort != cargo_tail -> next){
+		if(cargo_to_sort != current_cargo_tail -> next){
 
 			if(free_space >= cargo_to_sort -> size){
 				current -> content_size += cargo_to_sort -> size;
@@ -247,11 +247,12 @@ void cargos_sort(Cargos *cargo_to_sort , int start_point , Cargos *current_tail)
 		}
 	}
 
-	while(cargo_to_sort != cargo_tail -> next){
+	while(cargo_to_sort != current_cargo_tail -> next){
 		retake_cargos(cargo_to_sort);
 		cargo_to_sort = cargo_to_sort -> next;
 	}
 	cout << endl;
+
 }
 
 void checker(Cargos *cargo_to_delete){
@@ -269,11 +270,7 @@ void checker(Cargos *cargo_to_delete){
 					current -> cargos_data[i][1] = current -> cargos_data[i + 1][1];
 				}
 				current -> size_of_cargos_data--; //уменьшаем длинну массива потому что удалили один элемент
-				
-				// printf("Массив из отсека №%d " , current -> number);
-				// for(int f = 0 ; f < current -> size_of_cargos_data ; f++){
-				// 	cout << "("<< current->cargos_data[f][0] << " " << current->cargos_data[f][1] << ")";
-				// }
+				current -> content_size = cargo_to_delete -> size;
 				cout << endl;
 			}
 		}
@@ -304,15 +301,25 @@ int main(){
 
 		cout << endl;
 		Cargos *forgot = forgotten_cargos_head;
+		Cargos *mem;
 
 		if(forgot != NULL){
-			cargos_sort(forgotten_cargos_head , count_of_forgeted);
+			cargos_sort(forgotten_cargos_head , count_of_forgeted , forgotten_cargos_tail);
+			
+			cout << "WHILE";
+			while(forgotten_cargos_head != forgotten_cargos_tail -> next ){
+				mem = forgotten_cargos_head;
+				forgotten_cargos_head = forgotten_cargos_head -> next;
+				delete mem;
+			}
+			cout << "WHILE DONE";
+
 			forgotten_cargos_head = NULL;
 			forgotten_cargos_tail = NULL;
 		}
 
 		if(cargo_tail != NULL){
-			cargos_sort(cargo_head , count_of_cargos);
+			cargos_sort(cargo_head , count_of_cargos , cargo_tail);
 			count_of_cargos += cargo_tail -> number - count_of_cargos;
 		}
 		
@@ -328,6 +335,7 @@ int main(){
 		while(head_for_deleting != cargo_tail -> next){
 			if((head_for_deleting -> time) <= working_time){
 				printf("Удален груз №%d с временем работы %d при времени работы программы %d \n" , head_for_deleting -> number , (head_for_deleting -> time)  , working_time );
+				
 
 				if(head_for_deleting == cargo_head){
 					checker(head_for_deleting); // проверим и удалим из отсека
